@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/memory-model.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/memory-model.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+const uuid = require('uuid/v4');
+
+/**
+ * Memory Data Model
+ * @module src/models/memory-model
+ */
+class Model {
+
+  /**
+   * Creates an instance of a memory Model.
+   * @param {object} schema An outline of the fields and pieces of data that are required by each data model. This may vary in each Model instance, e.g., the Players data model may have different required fields in its schema than the Teams data model.
+   */
+  constructor(schema) {
+    this.schema = schema;
+    this.database = [];
+  }
+
+  /**
+   * Method to "sanitize" user entry of records into the database. Goes through each required field in the schema to check if those fields are included in the record entry. If all required fields are present, it returns the recorded entered. If the required fields are not found, it returns undefined. Any fields in the entry that are not required by the schema are passed through to the returned record.
+   *
+   * @param {object} entry New record to write to database in JSON format. Must contain required fields defined in schema.
+   * @returns record entered by the user or undefined
+   */
+  sanitize(entry) {
+
+    let valid = true;
+    let record = {};
+
+    Object.keys(this.schema).forEach( field => {
+      if ( this.schema[field].required ) {
+        if (entry[field]) {
+          record[field] = entry[field];
+        } else {
+          valid = false;
+        }
+      }
+      else {
+        record[field] = entry[field];
+      }
+    });
+    
+    return valid ? record : undefined;
+  }
+  
+  /**
+   * Gives the number of collections in a database
+   *
+   * @returns {integer} the length of the database array
+   */
+  count() {
+    return this.database.length;
+  }
+
+  /**
+   * Mocks an http GET request for an individual record (by id) or a list of all records if no id is provided.
+   *
+   * @param {string} id Unique identifier of an individual record (UUID format)
+   * @returns {object} Resolves a promise with the records found in the database in JSON format
+   */
+  get(id) {
+    const records = id ? this.database.filter( (record) => record._id === id ) : this.database;
+    return Promise.resolve(records);
+  }
+
+  /**
+   * Mocks an http POST request to create a new record in the memory database.
+   *
+   * @param {object} entry New record to write to database in JSON format. Must contain required fields defined in schema (passes through santize method).
+   * @returns {object} Resolves a promise with the record written to the database in JSON format
+   */
+  post(entry) {
+    entry._id = uuid();
+    let record = this.sanitize(entry);
+    if ( record._id ) { this.database.push(record); }
+    return Promise.resolve(record);
+  }
+
+  /**
+   * Makes an http DELETE request to destroy an existing record in the database
+   *
+   * @param {string} id Unique identifier of an individual record (UUID format)
+   * @returns {object} Empty object to indicate that record was successfully deleted.
+   */
+  delete(id) {
+    this.database = this.database.filter((record) => record._id !== id );
+    return this.get(id);
+  }
+
+  /**
+   * Mocks an http PUT request to edit an existing record in the database
+   * @param  {string} id Unique identifier of an individual record (UUID format)
+   * @param  {object} record Updated record to write to database in JSON format. Must contain required fields defined in schema.
+   * @returns {object} Updated record from the database 
+   */
+  put(id, entry) {
+    let record = this.sanitize(entry);
+    if( record._id ) { this.database = this.database.map((item) => (item._id === id) ? record : item  ); }
+    return this.get(id);
+  }
+  
+}
+
+module.exports = Model;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-src_api_v1.html">src/api/v1</a></li><li><a href="module-src_app.html">src/app</a></li><li><a href="module-src_auth_middleware.html">src/auth/middleware</a></li><li><a href="module-src_auth_new-routes.html">src/auth/new-routes</a></li><li><a href="module-src_auth_roles-model.html">src/auth/roles-model</a></li><li><a href="module-src_auth_router.html">src/auth/router</a></li><li><a href="module-src_auth_users-model.html">src/auth/users-model</a></li><li><a href="module-src_middleware_404.html">src/middleware/404</a></li><li><a href="module-src_middleware_500.html">src/middleware/500</a></li><li><a href="module-src_middleware_model-finder.html">src/middleware/model-finder</a></li><li><a href="module-src_models_categories_categories-model.html">src/models/categories/categories-model</a></li><li><a href="module-src_models_memory-model.html">src/models/memory-model</a></li><li><a href="module-src_models_mongo-model.html">src/models/mongo-model</a></li></ul><h3>Classes</h3><ul><li><a href="module-src_models_categories_categories-model-Categories.html">Categories</a></li><li><a href="module-src_models_memory-model-Model.html">Model</a></li><li><a href="module-src_models_mongo-model-Model.html">Model</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-src_api_v1-router.html">router</a></li><li><a href="module-src_auth_router-authRouter.html">authRouter</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Apr 07 2019 19:08:35 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
