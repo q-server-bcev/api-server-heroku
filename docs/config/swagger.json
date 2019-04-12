@@ -1,0 +1,156 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Core API",
+    "description": "The worlds funnest little API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "paths": {
+    "/categories": {
+      "get": {
+        "description": "Get all categories",
+        "responses": {
+          "200": {
+            "description": "Returned a list of categories",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new category",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returned the created category",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "get": {
+        "description": "Get One Category",
+        "responses": {
+          "200": {
+            "description": "Returned one category",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete One Category",
+        "responses": {
+          "200": {
+            "description": "Deleted one category",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Delete"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Replace a category",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returned the updated category",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CategoryList": {
+        "type": "array",
+        "example": [
+          {
+            "id": 1,
+            "Category 1": null
+          },
+          {
+            "id": 2,
+            "Category 2": null
+          }
+        ]
+      },
+      "NewCategory": {
+        "type": "object",
+        "example": {
+          "name": "Category Name"
+        }
+      },
+      "Category": {
+        "type": "object",
+        "example": {
+          "id": 2,
+          "name": "Category Name"
+        }
+      },
+      "Delete": {
+        "type": "object",
+        "example": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: auth/router.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: auth/router.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+/**
+ * Authentication Router Module
+ * Manages routes used to sign-up and sign-in using various authentication methods (Basic, Bearer, OAuth)
+ * @module src/auth/router
+ * @requires express
+ */
+
+/**
+ * Express module
+ * @const
+ */
+const express = require('express');
+
+/**
+ * Express router to mount authentication-related functions on
+ * @type {object}
+ * @const
+ * @namespace authRouter
+ */
+const authRouter = express.Router();
+
+/**
+ * Users model module
+ * @const
+ */
+const User = require('./users-model.js');
+
+/**
+ * Authentication middleware module
+ * @const
+ */
+const auth = require('./middleware.js');
+
+/**
+ * OAuth middleware module for Google
+ * @const
+ */
+const oauth = require('./oauth/google.js');
+
+/**
+ * Dummy routes module
+ * @const
+ */
+const newRoutes = require('./new-routes.js');
+
+/**
+ * Route for signing-up a new user to the database
+ * @name post/signup
+ * @function
+ * @memberof module:src/auth/router~authRouter
+ * @param {string} path Express path
+ * @param {callback} middleware Express middleware (req, res, next)
+ */
+authRouter.post('/signup', (req, res, next) => {
+  let user = new User(req.body);
+  user.save()
+    .then((user) => {
+      req.token = user.generateToken();
+      req.user = user;
+      res.set('token', req.token);
+      res.cookie('auth', req.token);
+      res.send(req.token);
+    })
+    .catch(next);
+});
+
+/**
+ * Route for signing-in a user
+ * @name  post/signin
+ * @function
+ * @memberof module:src/auth/router~authRouter
+ * @param {string} path Express path
+ * @param {callback} auth Authentication middleware
+ * @param {callback} middleware Express middleware (req, res, next)
+ */
+authRouter.post('/signin', auth(), (req, res, next) => {
+  res.cookie('auth', req.token);
+  res.send(req.token);
+});
+
+/**
+ * Route for OAuth sign-in using Google Plus
+ * @name  get/oauth
+ * @function
+ * @memberof module:src/auth/router~authRouter
+ * @param {string} path Express path
+ * @param {callback} middleware Express middleware (req, res, next)
+ */
+authRouter.get('/oauth', (req, res, next) => {
+  oauth.authorize(req)
+    .then(token => {
+      res.status(200).send(token);
+    })
+    .catch(next);
+});
+
+/**
+ * Route for returning a permanent user token
+ * @name  post/key
+ * @function
+ * @memberof module:src/auth/router~authRouter
+ * @param {string} path Express path
+ * @param {callback} auth Authentication middleware
+ * @param {callback} middleware Express middleware (req, res, next)
+ */
+authRouter.post('/key', auth(), (req, res, next) => {
+  let key = req.user.generateKey();
+  res.status(200).send(key);
+});
+
+authRouter.use(newRoutes);
+
+module.exports = authRouter;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-src_api_v1.html">src/api/v1</a></li><li><a href="module-src_app.html">src/app</a></li><li><a href="module-src_auth_middleware.html">src/auth/middleware</a></li><li><a href="module-src_auth_new-routes.html">src/auth/new-routes</a></li><li><a href="module-src_auth_roles-model.html">src/auth/roles-model</a></li><li><a href="module-src_auth_router.html">src/auth/router</a></li><li><a href="module-src_auth_users-model.html">src/auth/users-model</a></li><li><a href="module-src_middleware_404.html">src/middleware/404</a></li><li><a href="module-src_middleware_500.html">src/middleware/500</a></li><li><a href="module-src_middleware_model-finder.html">src/middleware/model-finder</a></li><li><a href="module-src_models_categories_categories-model.html">src/models/categories/categories-model</a></li><li><a href="module-src_models_memory-model.html">src/models/memory-model</a></li><li><a href="module-src_models_mongo-model.html">src/models/mongo-model</a></li></ul><h3>Classes</h3><ul><li><a href="module-src_models_categories_categories-model-Categories.html">Categories</a></li><li><a href="module-src_models_memory-model-Model.html">Model</a></li><li><a href="module-src_models_mongo-model-Model.html">Model</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-src_api_v1-router.html">router</a></li><li><a href="module-src_auth_router-authRouter.html">authRouter</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Apr 07 2019 19:08:35 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
