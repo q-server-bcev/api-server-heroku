@@ -1,4 +1,8 @@
 'use strict';
+
+const Q = require('@nmq/q/client');
+
+
 /**
  * Mongo Data Model Interface
  * @module src/models/mongo-model
@@ -19,6 +23,8 @@ class Model {
    * @returns The result of the query, either an individual record or all records in a collection.
    */
   get(_id) {
+    console.log('Line 27: in get()');
+    Q.publish('database', 'read', {message:'get() was used'});
     let queryObject = _id ? {_id} : {};
     return this.schema.find(queryObject);
   }

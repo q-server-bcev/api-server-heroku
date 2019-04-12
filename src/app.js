@@ -1,4 +1,5 @@
 'use strict';
+const Q = require('@nmq/q/client');
 
 /**
  * API Server Module
@@ -52,6 +53,8 @@ module.exports = {
         console.log(`Server Up on ${port}`);
         app.post('/roles', populateRoles);
         populateRoles();
+        Q.publish('database', 'read', {message:'get() was used'});
+
       });
     }
     else {
