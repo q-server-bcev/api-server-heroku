@@ -42,6 +42,22 @@
 * Subscribes to the events: 'delete', 'update', 'read', 'create', 'error', 'save'.
 * Logs the event name and payload when heard.
 
+We've pre-populated a few users with different permissions:
+* usher, the user
+* eddie, the editor
+* addie, the admin
+* susie, the superuser
+
+Here are some example requests to the API server (hosted on Heroku) using HTTPie:
+* To view all teams:
+`http https://api-server-401.herokuapp.com/api/v1/teams -a usher:usher`
+
+* To view all players:
+`http https://api-server-401.herokuapp.com/api/v1/players -a susie:susie`
+
+* To add a new team to the MongoDB:
+`echo '{"name":"kings", "city":"sacramento"}' | http post https://api-server-401.herokuapp.com/api/v1/teams -a addie:addie`
+
 ### Setup
 #### `.env` requirements
 * `MONGODB_URI` - Connection to the mongo database
