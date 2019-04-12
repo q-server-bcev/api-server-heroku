@@ -20,10 +20,10 @@ module.exports = (req, res, next) => {
         if (!result) {
           const newRole = new Roles(role);
           newRole.save().then(role => {
-            console.log(`${role.role} role added to database.`);
+            // console.log(`${role.role} role added to database.`);
           });
         } else {
-          console.log(`'${role.role}' role present in database.`);
+          // console.log(`'${role.role}' role present in database.`);
         }
       })
       .catch(console.error);

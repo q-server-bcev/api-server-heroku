@@ -53,12 +53,12 @@ module.exports = {
         console.log(`Server Up on ${port}`);
         app.post('/roles', populateRoles);
         populateRoles();
-        Q.publish('database', 'read', {message:'get() was used'});
-
+        Q.publish('database', 'api-server', {message:'api-server is up'});
       });
     }
     else {
       console.log('Server is already running');
     }
   },
+  Q:Q,
 };
